@@ -11,7 +11,7 @@ st.title("📘 PDF Summarizer & Quiz Generator")
 for k in ("pdf_path", "summary", "quiz"):
     if k not in st.session_state:
         st.session_state[k] = ""
-        
+        222
 
 uploaded = st.file_uploader("Upload PDF", type=["pdf"])
 if uploaded:
