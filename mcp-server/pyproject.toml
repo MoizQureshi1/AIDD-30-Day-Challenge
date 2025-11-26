@@ -1,0 +1,13 @@
+[project]
+name = "mcp-server"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "dotenv>=0.9.9",
+    "google-genai>=1.52.0",
+    "openai-agents>=0.6.1",
+    "pypdf2>=3.0.1",
+    "streamlit>=1.51.0",
+]
