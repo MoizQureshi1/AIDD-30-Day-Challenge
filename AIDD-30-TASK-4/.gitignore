@@ -1,8 +1,0 @@
-.env
-.gemini/settings.json
-.venv/
-.vscode/
-.pytest_cache/
-.pytest_cache/
-settings.json
-.gemini
