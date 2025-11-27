@@ -2,9 +2,13 @@
 from PyPDF2 import PdfReader
 
 def extract_pdf_text(path: str) -> str:
+    """
+    Extract text from all pages of a PDF and return as a single string.
+    """
     reader = PdfReader(path)
-    text_parts = []
-    for p in reader.pages:
-        page_text = p.extract_text() or ""
-        text_parts.append(page_text)
-    return "\n\n".join(text_parts)
+    parts = []
+    for page in reader.pages:
+        text = page.extract_text()
+        if text:
+            parts.append(text)
+    return "\n\n".join(parts)
