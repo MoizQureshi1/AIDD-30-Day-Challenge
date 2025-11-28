@@ -11,7 +11,7 @@ load_dotenv()
 MODEL_NAME = os.getenv("MODEL_NAME", "gemini-2.0-flash")
 
 def _read_api_key() -> str | None:
-    """Look for the Gemini key in several common locations."""
+    """Look for the Gemini key in several common locations.."""
     key = os.getenv("GEMINI_API_KEY")
     if key:
         return key
