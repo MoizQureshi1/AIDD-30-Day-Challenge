@@ -12,7 +12,7 @@ MODEL_NAME = os.getenv("MODEL_NAME", "gemini-2.0-flash")
 # IMPORTANT: Force API-key mode to avoid Vertex AI project requirements in many deploy envs
 if not GEMINI_API_KEY:
     raise RuntimeError(
-        "GEMINI_API_KEY is missing. Add it to your .env or environment before running."
+        "GEMINI_API_KEY is missing. Add it to your .env or environment before running.."
     )
 
 client = genai.Client(api_key=GEMINI_API_KEY, vertexai=False)
