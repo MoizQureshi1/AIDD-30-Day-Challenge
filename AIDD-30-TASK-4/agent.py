@@ -1,68 +1,16 @@
 # agent.py
-from __future__ import annotations
 import os
 from dotenv import load_dotenv
 from google import genai
 
 load_dotenv()
-
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 # If you are not sure which model is available, run the list_models snippet below.
 # Default fallback model (commonly available): "gemini-2.0-flash"
 MODEL_NAME = os.getenv("MODEL_NAME", "gemini-2.0-flash")
 
-def _read_api_key() -> str | None:
-    """Look for the Gemini key in several common locations.."""
-    key = os.getenv("GEMINI_API_KEY")
-    if key:
-        return key
-
-    # Streamlit secrets (UI or secrets.toml)
-    try:
-        import streamlit as st  # type: ignore
-
-        key = st.secrets.get("GEMINI_API_KEY")
-        if key:
-            return key
-    except Exception:
-        pass
-
-    # Raw .streamlit/secrets.toml file fallback when st.secrets isn't available
-    secrets_path = os.path.join(".streamlit", "secrets.toml")
-    if os.path.exists(secrets_path):
-        try:
-            import tomllib  # Python 3.11+
-        except ModuleNotFoundError:
-            import tomli as tomllib  # type: ignore
-
-        try:
-            with open(secrets_path, "rb") as fh:
-                data = tomllib.load(fh)
-                key = data.get("GEMINI_API_KEY") or data.get("default", {}).get("GEMINI_API_KEY")
-                if key:
-                    return key
-        except Exception:
-            pass
-
-    return None
-
-_GEMINI_API_KEY = _read_api_key()
-_CLIENT: genai.Client | None = None
-
-def _get_client() -> genai.Client:
-    """Create the Gemini client lazily so missing keys don't break imports."""
-    global _CLIENT, _GEMINI_API_KEY
-
-    if _CLIENT:
-        return _CLIENT
-
-    if not _GEMINI_API_KEY:
-        raise RuntimeError(
-            "GEMINI_API_KEY not found. Set it in environment variables, "
-            "Streamlit secrets, or .streamlit/secrets.toml."
-        )
-
-    _CLIENT = genai.Client(api_key=_GEMINI_API_KEY, vertexai=False)
-    return _CLIENT
+# IMPORTANT: Force API-key mode to avoid Vertex AI project requirements in many deploy envs
+client = genai.Client(api_key=GEMINI_API_KEY, vertexai=False)
 
 def _extract_text_from_response(resp) -> str:
     """
@@ -109,8 +57,10 @@ class Agent:
         compatible with many SDK versions. If your SDK doesn't support
         it, run client.models.list() and adjust MODEL_NAME accordingly.
         """
-        client = _get_client()
+        if not GEMINI_API_KEY:
+            raise RuntimeError("GEMINI_API_KEY not set in environment (.env)")
 
+        # Send request
         resp = client.models.generate_content(
             model=MODEL_NAME,
             contents=prompt
@@ -121,7 +71,7 @@ class Agent:
 # Optional utility: list available models (uncomment to run locally for debugging)
 if __name__ == "__main__":
     try:
-        models = _get_client().models.list()
+        models = client.models.list()
         print("Available models:")
         for m in models:
             print("-", getattr(m, "name", str(m)))
